@@ -6,7 +6,9 @@ namespace trainer.server.Infrastructure.Data.Interface.Trainer
     public interface ITrainer
     {
         Task<Exercise> ManageExercises(Exercise model);
-        Task<Category> ManageCategories(Category model);
-        Task<FilteredList<Exercise>> FilterExercises(FilteredList<Exercise> request);
+        Task<IEnumerable<Category>> ManageCategories(Category model);
+        Task<FilteredList<Exercise>> FilterExercises(Filter filter);
+        Task<IEnumerable<Exercise>> ExercisesByCategory(string category);
+        Task<IEnumerable<Category>> GetCategories();
     }
 }

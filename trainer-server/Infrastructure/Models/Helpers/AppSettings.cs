@@ -5,7 +5,7 @@ namespace trainer.server.Infrastructure.Models.Helpers
 {
     public class AppSettings
     {
-        public string Secret { get; set; }
+        public string? Secret { get; set; }
 
         public static string GetSecret()
         {

@@ -16,12 +16,16 @@
         public Filter()
         {
             Keyword = "";
+            CategoryID = 0;
+            CategoryName = "";
             pageSize = 10;
             page = 1;
         }
 
         public string? Keyword { get; set; }
 
+        public int CategoryID { get; set; }
+        public string? CategoryName { get; set; }
         public int page { get; set; }
 
         public int pageSize { get; set; }

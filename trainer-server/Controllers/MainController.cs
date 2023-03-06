@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using trainer.server.Helpers;
+using Microsoft.AspNetCore.Mvc;
+using trainer.server.Infrastructure.Managers.Trainer;
 
 namespace trainer.server.Controllers
 {
@@ -7,12 +9,17 @@ namespace trainer.server.Controllers
     public class MainController : ControllerBase
     {
         [HttpGet]
-        [Route("get/artist")]
-        public async Task<IActionResult> GetArtist([FromQuery] int ID)
+        [Route("get/exercises")]
+        public async Task<IActionResult> ExercisesByCategory([FromQuery] string category)
         {
             try
             {
-                return Ok();
+                if (AuthHelpers.Authorize(HttpContext))
+                {
+                    var result = await new TrainerManager().ExercisesByCategory(category);
+                    return Ok(result);
+                }
+                return StatusCode(500, "Authorization failed");
             }
             catch (Exception ex)
             {
