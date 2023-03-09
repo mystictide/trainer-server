@@ -8,6 +8,26 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
 {
     public class TrainerRepository : AppSettings, ITrainer
     {
+        public async Task<bool> DeleteExercises(int ID)
+        {
+            try
+            {
+                string query = $@"
+                DELETE FROM exercises t WHERE t.id = {ID};
+                DELETE FROM exercise_categories t WHERE t.exerciseid = {ID};";
+
+                using (var connection = GetConnection)
+                {
+                    var res = await connection.ExecuteAsync(query);
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async Task<IEnumerable<Exercise>> ExercisesByCategory(string category)
         {
             try
@@ -48,7 +68,7 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
             try
             {
                 var filterModel = new Exercise();
-                filter.pageSize = 25;
+                filter.pageSize = 16;
                 FilteredList<Exercise> request = new FilteredList<Exercise>()
                 {
                     filter = filter,
@@ -56,6 +76,11 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
                 };
                 FilteredList<Exercise> result = new FilteredList<Exercise>();
                 string WhereClause = "";
+                if (filter.CategoryName != null && filter.CategoryName != "")
+                {
+                    WhereClause = $@" WHERE t.id in (SELECT exerciseid FROM exercise_categories 
+                  WHERE categoryid in (select id from categories c where c.name = '{filter.CategoryName}'))";
+                }
                 if (filter.CategoryID > 0)
                 {
                     WhereClause = $@"WHERE t.id in (SELECT exerciseid FROM exercise_categories WHERE categoryid = {filter.CategoryID})";
@@ -68,9 +93,9 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
                     request.filter.pager = new Page(result.totalItems, request.filter.pageSize, request.filter.page);
                     string query = $@"
                     SELECT t.*, c.* FROM exercises t
-                    left join categories c on c.id = (select exerciseid from exercise_categories l where l.exerciseid = t.id)
+                    left join categories c on c.id = (select categoryid from exercise_categories l where l.exerciseid = t.id)
                     {WhereClause}
-                    ORDER BY t.id ASC 
+                    ORDER BY t.id DESC 
                     OFFSET {request.filter.pager.StartIndex} ROWS
                     FETCH NEXT {request.filter.pageSize} ROWS ONLY";
                     result.data = await con.QueryAsync<Exercise, Category, Exercise>(query, (ex, cat) =>

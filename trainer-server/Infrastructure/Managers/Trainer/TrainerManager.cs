@@ -15,6 +15,11 @@ namespace trainer.server.Infrastructure.Managers.Trainer
             _repo = new TrainerRepository();
         }
 
+        public async Task<bool> DeleteExercises(int ID)
+        {
+            return await _repo.DeleteExercises(ID);
+        }
+
         public async Task<IEnumerable<Exercise>> ExercisesByCategory(string category)
         {
             return await _repo.ExercisesByCategory(category);

@@ -49,6 +49,25 @@ namespace trainer.server.Controllers
         }
 
         [HttpPost]
+        [Route("delete/exercise")]
+        public async Task<IActionResult> DeleteExercise([FromQuery] int ID)
+        {
+            try
+            {
+                if (AuthHelpers.Authorize(HttpContext))
+                {
+                    var result = await new TrainerManager().DeleteExercises(ID);
+                    return Ok(result);
+                }
+                return StatusCode(500, "Authorization failed");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost]
         [Route("filter/exercises")]
         public async Task<IActionResult> FilterExercises([FromBody] Filter filter)
         {
