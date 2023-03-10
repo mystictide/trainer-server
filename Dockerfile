@@ -15,7 +15,7 @@ RUN dotnet publish "trainer.server.csproj" -c Release -o /app/publish /p:UseAppH
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENV ASPNETCORE_URLS=http://+:747
-ENV ASPNETCORE_HTTP_PORT=http://+:747
+ENV ASPNETCORE_URLS=https://+:747
+ENV ASPNETCORE_HTTP_PORT=https://+:747
 EXPOSE 747
-ENTRYPOINT ["dotnet", "trainer.server.dll", "--urls", "http://+:747"]
+ENTRYPOINT ["dotnet", "trainer.server.dll", "--urls", "https://+:747"]
