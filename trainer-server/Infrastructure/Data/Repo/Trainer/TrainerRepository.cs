@@ -37,7 +37,7 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
 
                 string query = $@"
                     SELECT t.*, c.* FROM exercises t
-                    left join categories c on c.id = (select exerciseid from exercise_categories l where l.exerciseid = t.id)
+                    left join categories c on c.id in (select exerciseid from exercise_categories l where l.exerciseid = t.id)
                     {WhereClause}
                     ORDER BY t.id ASC";
 
