@@ -1,4 +1,5 @@
 using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.HttpOverrides;
 using trainer.server.Infrastructure.Models.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 //app.UseMiddleware();
 //app.UseHttpsRedirection();
