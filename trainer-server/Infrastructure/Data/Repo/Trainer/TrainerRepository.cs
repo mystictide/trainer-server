@@ -85,6 +85,7 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
                 {
                     WhereClause = $@"WHERE t.id in (SELECT exerciseid FROM exercise_categories WHERE categoryid = {filter.CategoryID})";
                 }
+
                 string query_count = $@"Select Count(t.id) from exercises t {WhereClause}";
 
                 using (var con = GetConnection)
@@ -93,7 +94,7 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
                     request.filter.pager = new Page(result.totalItems, request.filter.pageSize, request.filter.page);
                     string query = $@"
                     SELECT t.*, c.* FROM exercises t
-                    left join categories c on c.id = (select categoryid from exercise_categories l where l.exerciseid = t.id)
+                    left join categories c on c.id in (select categoryid from exercise_categories l where l.exerciseid = t.id)
                     {WhereClause}
                     ORDER BY t.id DESC 
                     OFFSET {request.filter.pager.StartIndex} ROWS
@@ -194,11 +195,13 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
                     var res = await connection.QueryFirstOrDefaultAsync<Exercise>(query, param);
                     param.Add("@ID", res.ID);
                     await connection.ExecuteAsync(gdQuery, param);
+                    IEnumerable<Category> cats = Enumerable.Empty<Category>();
                     foreach (var item in model.Categories)
                     {
                         param.Add("@CatID", item.ID);
-                        res.Categories = (List<Category>)await connection.QueryAsync<Category>(cQuery, param);
+                        cats = await connection.QueryAsync<Category>(cQuery, param);
                     }
+                    res.Categories = cats.ToList();
                     return res;
                 }
             }
