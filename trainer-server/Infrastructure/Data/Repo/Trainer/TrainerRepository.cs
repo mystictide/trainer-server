@@ -171,6 +171,11 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
                 DynamicParameters param = new DynamicParameters();
                 dynamic identity = model.ID.HasValue ? model.ID.Value : "default";
 
+                if (model.Name.Contains("'"))
+                {
+                    model.Name = model.Name.Replace("'", "''");
+                }
+
                 string query = $@"
                 INSERT INTO exercises (id, name, type, PreviewURL, VideoURL)
 	 	                VALUES ({identity}, '{model.Name}', '{model.Type}', '{model.PreviewURL}', '{model.VideoURL}')
