@@ -76,14 +76,21 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
                 };
                 FilteredList<Exercise> result = new FilteredList<Exercise>();
                 string WhereClause = "";
+                if (filter.Keyword != null && filter.Keyword != "")
+                {
+                    WhereClause = $@" WHERE t.id in (SELECT exerciseid FROM exercise_categories 
+                WHERE exerciseid in (select id from exercises e where e.name ILIKE '%{filter.Keyword}%'))";
+                }
                 if (filter.CategoryName != null && filter.CategoryName != "")
                 {
                     WhereClause = $@" WHERE t.id in (SELECT exerciseid FROM exercise_categories 
-                  WHERE categoryid in (select id from categories c where c.name = '{filter.CategoryName}'))";
+                  WHERE categoryid in (select id from categories c where c.name = '{filter.CategoryName}')
+                AND exerciseid in (select id from exercises e where e.name ILIKE '%{filter.Keyword}%'))";
                 }
                 if (filter.CategoryID > 0)
                 {
-                    WhereClause = $@"WHERE t.id in (SELECT exerciseid FROM exercise_categories WHERE categoryid = {filter.CategoryID})";
+                    WhereClause = $@"WHERE t.id in (SELECT exerciseid FROM exercise_categories WHERE categoryid = {filter.CategoryID}
+                    AND exerciseid in (select id from exercises e where e.name ILIKE '%{filter.Keyword}%'))";
                 }
 
                 string query_count = $@"Select Count(t.id) from exercises t {WhereClause}";
