@@ -68,7 +68,7 @@ namespace trainer.server.Infrastructure.Data.Repo.Trainer
             try
             {
                 var filterModel = new Exercise();
-                filter.pageSize = 16;
+                filter.pageSize = 38;
                 FilteredList<Exercise> request = new FilteredList<Exercise>()
                 {
                     filter = filter,
